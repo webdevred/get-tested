@@ -19,8 +19,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Checkout repo
-      uses: actions/checkout@v5
     - name: Set up get-tested
       id: setup
       shell: bash
@@ -28,7 +26,7 @@ runs:
         GH_TOKEN: ${{ github.token }}
         inputs_directory: ${{ inputs.directory }}
         requested_version: ${{ inputs.version }}
-      run: bash ./setup-get-tested/setup-get-tested.sh
+      run: bash ./setup-get-tested.sh
 
 branding:
   icon: 'list'
