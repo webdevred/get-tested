@@ -19,6 +19,8 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: ls -la
     - name: Set up get-tested
       id: setup
       shell: bash
