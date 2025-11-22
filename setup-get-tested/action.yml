@@ -19,6 +19,7 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v5
     - shell: bash
       run: ls -la
     - name: Set up get-tested
