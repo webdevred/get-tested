@@ -62,7 +62,7 @@ runs:
       #
       # See: https://github.com/actions/runner/issues/895
     - name: Set up get-tested
-      uses: webdevred/get-tested/setup-get-tested@6add9ddc7d7c1a715ea457a0241b1e276848b03b
+      uses: webdevred/get-tested/setup-get-tested@1e8a36daab476faa2dc2a1c7429af2d43fe7b679
       with:
         version: ${{ inputs.version }}
 
