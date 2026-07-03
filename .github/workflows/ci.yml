@@ -235,8 +235,8 @@ jobs:
 
     - name: Create GitHub Release (upload files)
       if: |
-        ${{ ! contains(github.event.pull_request.labels.*.name, 'release-workflow-fixes') }} &&
-        ${{ steps.create-head-relase.outputs.new_release_needed == true }}
+        !contains(github.event.pull_request.labels.*.name, 'release-workflow-fixes') &&
+        steps.create-head-release.outputs.new_release_needed == 'true'
       uses: softprops/action-gh-release@v3
       with:
         draft: true
