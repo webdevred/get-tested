@@ -229,11 +229,14 @@ jobs:
       run: bash ./.github/scripts/consolidate_artifacts.sh
 
     - run: bash ./.github/scripts/create_head_release.sh
+      id: create-head-release
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create GitHub Release (upload files)
-      if: ${{ ! contains(github.event.pull_request.labels.*.name, 'release-workflow-fixes') }}
+      if: |
+        ${{ ! contains(github.event.pull_request.labels.*.name, 'release-workflow-fixes') }} &&
+        ${{ steps.create-head-relase.outputs.new_release_needed == true }}
       uses: softprops/action-gh-release@v3
       with:
         draft: true
