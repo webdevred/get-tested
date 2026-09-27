@@ -1,0 +1,70 @@
+name: Matrix include semantics
+
+on:
+  push:
+    branches: ["verify-matrix-include-merge"]
+
+permissions:
+  contents: read
+
+jobs:
+  outputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      today: ${{ steps.set.outputs.today }}
+      additive: ${{ steps.set.outputs.additive }}
+      pr: ${{ steps.set.outputs.pr }}
+    steps:
+      - id: set
+        run: |
+          include='[{"ghc":"9.12.2","newest":false,"oldest":true,"os":"macos-latest"},{"ghc":"9.12.2","newest":false,"oldest":true,"os":"ubuntu-latest"},{"ghc":"9.14.1","newest":true,"oldest":false,"os":"macos-latest"},{"ghc":"9.14.1","newest":true,"oldest":false,"os":"ubuntu-latest"}]'
+          echo "today={\"include\":$include}" >> "$GITHUB_OUTPUT"
+          echo "additive={\"ghc\":[\"9.12.2\",\"9.14.1\"],\"os\":[\"macos-latest\",\"ubuntu-latest\"],\"include\":$include}" >> "$GITHUB_OUTPUT"
+          echo 'pr={"include":{"ghc":["9.12.2","9.14.1"],"os":["macos-latest","ubuntu-latest"]}}' >> "$GITHUB_OUTPUT"
+
+  today:
+    needs: outputs
+    name: "today ${{ matrix.ghc }} ${{ matrix.os }} newest=${{ matrix.newest }} oldest=${{ matrix.oldest }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix: ${{ fromJSON(needs.outputs.outputs.today) }}
+    steps:
+      - run: echo ok
+
+  additive:
+    needs: outputs
+    name: "additive ${{ matrix.ghc }} ${{ matrix.os }} newest=${{ matrix.newest }} oldest=${{ matrix.oldest }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix: ${{ fromJSON(needs.outputs.outputs.additive) }}
+    steps:
+      - run: echo ok
+
+  mixed:
+    needs: outputs
+    name: "mixed ${{ matrix.ghc }} ${{ matrix.os }} newest=${{ matrix.newest }} oldest=${{ matrix.oldest }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        ghc: ${{ fromJSON(needs.outputs.outputs.additive).ghc }}
+        os: ${{ fromJSON(needs.outputs.outputs.additive).os }}
+        include: ${{ fromJSON(needs.outputs.outputs.additive).include }}
+        exclude:
+          - ghc: "9.12.2"
+            os: macos-latest
+    steps:
+      - run: echo ok
+
+  pr:
+    needs: outputs
+    name: "pr ${{ matrix.ghc }} ${{ matrix.os }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix: ${{ fromJSON(needs.outputs.outputs.pr) }}
+    steps:
+      - run: echo ok
